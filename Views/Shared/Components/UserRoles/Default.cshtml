@@ -1,0 +1,7 @@
+@model IList<string>
+
+@* Здесь мы передаём роли в Layout и можем использовать *@
+@{
+    // Можно сохранить в ViewData для доступа в Layout, если нужно
+    ViewData["UserRoles"] = Model;
+}

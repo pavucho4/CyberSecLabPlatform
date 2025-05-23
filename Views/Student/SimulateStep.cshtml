@@ -1,0 +1,18 @@
+@model CyberSecLabPlatform.Models.ScenarioStep
+
+@{
+    ViewData["Title"] = "Выполнение сценария";
+}
+
+<h3>@Model.StepText</h3>
+
+<form asp-action="SimulateStep" method="post">
+    @foreach (var option in Model.Options)
+    {
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="optionId" value="@option.Id" id="opt@option.Id" required />
+            <label class="form-check-label" for="opt@option.Id">@option.OptionText</label>
+        </div>
+    }
+    <button type="submit" class="btn btn-primary mt-3">Далее</button>
+</form>

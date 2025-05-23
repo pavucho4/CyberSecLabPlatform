@@ -1,0 +1,90 @@
+/* Основные стили для навигации и ссылок */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-word;
+  max-width: 180px;
+  word-wrap: break-word;
+}
+
+a {
+  color: #0077cc;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #005fa3;
+  text-decoration: underline;
+}
+
+/* Кнопки */
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #155d9c;
+  border-color: #134c7a;
+}
+
+/* Активные вкладки nav-pills */
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+/* Бордеры */
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+/* Тень */
+
+.box-shadow {
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+}
+
+/* Кнопка принятия политики */
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+/* Липкий футер и базовые настройки body */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  flex: 1 0 auto; /* Основной контент растягивается */
+}
+
+footer.footer {
+  flex-shrink: 0;
+  line-height: 60px;
+  background-color: #f8f9fa;
+  text-align: center;
+}

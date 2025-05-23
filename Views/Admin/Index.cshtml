@@ -1,0 +1,29 @@
+@model IEnumerable<CyberSecLabPlatform.Models.AttackType>
+
+@{
+    ViewData["Title"] = "Типы атак";
+}
+
+<h2>Типы атак</h2>
+
+<a href="/Admin/CreateAttackType" class="btn btn-primary mb-3">Добавить новый тип атаки</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Сложность</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var attack in Model)
+        {
+            <tr>
+                <td>@attack.Name</td>
+                <td>@attack.Description</td>
+                <td>@attack.Difficulty</td>
+            </tr>
+        }
+    </tbody>
+</table>

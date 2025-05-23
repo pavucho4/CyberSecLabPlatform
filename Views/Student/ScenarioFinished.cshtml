@@ -1,0 +1,13 @@
+@model CyberSecLabPlatform.Models.ScenarioResult
+
+@{
+    ViewData["Title"] = "Результат сценария";
+}
+
+<h2>Сценарий: @Model.Assignment.Scenario.Title</h2>
+
+<p>Ваш результат: @Model.Score из @Model.Assignment.Scenario.MaxScore</p>
+<p>Статус: @(Model.IsPassed ? "Пройден" : "Не пройден")</p>
+<p>Дата завершения: @Model.CompletedAt.ToLocalTime()</p>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Назад к сценариям</a>

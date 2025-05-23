@@ -1,0 +1,31 @@
+@model IEnumerable<CyberSecLabPlatform.Models.StudentAttackAssignment>
+
+@{
+    ViewData["Title"] = "Результаты студента";
+}
+
+<h2>Результаты студента</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Сценарий</th>
+            <th>Тип атаки</th>
+            <th>Статус</th>
+            <th>Баллы</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in Model)
+        {
+            <tr>
+                <td>@result.Scenario.Title</td>
+                <td>@result.Scenario.AttackType.Name</td>
+                <td>@(result.Completed ? "Выполнен" : "Не выполнен")</td>
+                <td>@result.Score</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Analyst" asp-action="Index" class="btn btn-secondary">Назад</a>

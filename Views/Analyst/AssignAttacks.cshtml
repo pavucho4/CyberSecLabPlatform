@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Назначить сценарии";
+    var students = ViewBag.Students as IEnumerable<CyberSecLabPlatform.Models.ApplicationUser>;
+    var scenarios = ViewBag.Scenarios as IEnumerable<CyberSecLabPlatform.Models.Scenario>;
+}
+
+<h2>Назначить сценарий студенту</h2>
+
+<form method="post" asp-action="AssignAttacks">
+    <div class="form-group">
+        <label>Студент</label>
+        <select name="studentId" class="form-control" required>
+            <option value="">-- Выберите студента --</option>
+            @foreach (var student in students)
+            {
+                <option value="@student.Id">@student.UserName (@student.Email)</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Сценарий</label>
+        <select name="scenarioId" class="form-control" required>
+            <option value="">-- Выберите сценарий --</option>
+            @foreach (var sc in scenarios)
+            {
+                <option value="@sc.Id">@sc.Title (@sc.AttackType.Name) - Сложность: @sc.Complexity</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Назначить</button>
+</form>

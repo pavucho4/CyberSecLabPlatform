@@ -1,0 +1,23 @@
+@model CyberSecLabPlatform.Models.LoginViewModel
+
+<h2>Вход</h2>
+
+<form asp-action="Login" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <input asp-for="Email" class="form-control mb-2" placeholder="Email" />
+    <span asp-validation-for="Email" class="text-danger"></span>
+
+    <input asp-for="Password" type="password" class="form-control mb-3" placeholder="Пароль" />
+    <span asp-validation-for="Password" class="text-danger"></span>
+
+    <button type="submit" class="btn btn-primary">Войти</button>
+</form>
+
+<input type="hidden" asp-for="ReturnUrl" />
+
+<p>Нет аккаунта? <a href="/Account/Register">Зарегистрироваться</a></p>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

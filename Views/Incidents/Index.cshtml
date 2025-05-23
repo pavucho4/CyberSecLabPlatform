@@ -1,0 +1,42 @@
+@model IEnumerable<CyberSecLabPlatform.Models.Incident>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<CyberSecLabPlatform.Models.ApplicationUser> UserManager
+@inject SignInManager<CyberSecLabPlatform.Models.ApplicationUser> SignInManager
+
+<h2 class="mt-4 mb-3">Инциденты информационной безопасности</h2>
+
+@if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+{
+    <a href="/Incidents/Create" class="btn btn-primary mb-3">Создать инцидент</a>
+}
+
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Тип</th>
+            <th>Описание</th>
+            <th>Уровень угрозы</th>
+            <th>Обнаружено</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Type</td>
+                <td>@item.Description</td>
+                <td>
+                    <span class="badge 
+                        @(item.Severity == "Critical" ? "bg-danger" :
+                          item.Severity == "High" ? "bg-warning text-dark" :
+                          item.Severity == "Medium" ? "bg-info text-dark" : "bg-secondary")">
+                        @item.Severity
+                    </span>
+                </td>
+                <td>@item.DetectedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                <td><a class="btn btn-sm btn-outline-primary" href="/Incidents/Details/@item.Id">Подробнее</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

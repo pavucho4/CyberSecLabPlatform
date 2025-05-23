@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Главная страница";
+}
+
+<h1>Добро пожаловать в CyberSecLabPlatform</h1>
+
+<p>Платформа для обучения кибербезопасности в университете.</p>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <p>Вы вошли как <strong>@User.Identity.Name</strong> с ролью:
+        <strong>@string.Join(", ", User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value))</strong>
+    </p>
+
+    <p>
+        @if (User.IsInRole("Admin"))
+        {
+            <a href="/Admin" class="btn btn-primary">Личный кабинет Администратора</a>
+        }
+        else if (User.IsInRole("Analyst"))
+        {
+            <a href="/Analyst" class="btn btn-primary">Личный кабинет Аналитика</a>
+        }
+        else if (User.IsInRole("Student"))
+        {
+            <a href="/Student" class="btn btn-primary">Личный кабинет Студента</a>
+        }
+    </p>
+}
+else
+{
+    <p>Пожалуйста, <a href="/Account/Login">войдите</a> или <a href="/Account/Register">зарегистрируйтесь</a>, чтобы продолжить.</p>
+}

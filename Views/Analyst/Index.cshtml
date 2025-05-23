@@ -1,0 +1,32 @@
+@model IEnumerable<CyberSecLabPlatform.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Список студентов";
+}
+
+<h2>Студенты</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Имя</th>
+            <th>Email</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <td>@student.UserName</td>
+                <td>@student.Email</td>
+                <td>
+                    <a asp-controller="Analyst" asp-action="StudentsResults" asp-route-studentId="@student.Id" class="btn btn-info btn-sm">Результаты</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Analyst" asp-action="AssignAttacks" class="btn btn-primary mt-3">Назначить сценарии</a>
+<a asp-controller="Analyst" asp-action="ManageScenarios" class="btn btn-secondary mt-3 ms-2">Управление сценариями</a>

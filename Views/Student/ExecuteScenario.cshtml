@@ -1,0 +1,20 @@
+@model CyberSecLabPlatform.Models.StudentAttackAssignment
+
+@{
+    ViewData["Title"] = "Выполнение сценария";
+}
+
+<h2>Выполнение сценария: @Model.Scenario.Title</h2>
+
+<p><strong>Тип атаки:</strong> @Model.Scenario.AttackType.Name</p>
+<p><strong>Инструкции:</strong></p>
+<p>@Model.Scenario.Instructions</p>
+
+<form method="post" asp-action="ExecuteScenario" asp-route-assignmentId="@Model.Id">
+    <div class="form-group">
+        <label>Ваш ответ / отчет по выполнению</label>
+        <textarea name="studentResponse" class="form-control" rows="5" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Отправить</button>
+    <a asp-action="Index" class="btn btn-secondary ml-2">Отмена</a>
+</form>

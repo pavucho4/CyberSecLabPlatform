@@ -1,0 +1,31 @@
+@model IEnumerable<CyberSecLabPlatform.Models.ScenarioResult>
+
+@{
+    ViewData["Title"] = "Результаты прохождения";
+}
+
+<h2>Результаты студентов</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Студент</th>
+            <th>Сценарий</th>
+            <th>Баллы</th>
+            <th>Статус</th>
+            <th>Дата завершения</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var result in Model)
+        {
+            <tr>
+                <td>@result.Assignment.Student.UserName</td>
+                <td>@result.Assignment.Scenario.Title</td>
+                <td>@result.Score</td>
+                <td>@(result.IsPassed ? "Пройден" : "Не пройден")</td>
+                <td>@result.CompletedAt.ToLocalTime()</td>
+            </tr>
+        }
+    </tbody>
+</table>
