@@ -4,17 +4,40 @@
     ViewData["Title"] = "Выполнение сценария";
 }
 
-<h2>Выполнение сценария: @Model.Scenario.Title</h2>
+<div class="scenario-execution-container bg-white rounded shadow-sm p-4 mx-auto" style="max-width: 700px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <h2 class="mb-3 text-primary fw-semibold">Выполнение сценария: @Model.Scenario.Title</h2>
 
-<p><strong>Тип атаки:</strong> @Model.Scenario.AttackType.Name</p>
-<p><strong>Инструкции:</strong></p>
-<p>@Model.Scenario.Instructions</p>
+    <p class="mb-1"><strong class="fw-semibold text-dark">Тип атаки:</strong> <span class="text-dark fw-medium">@Model.Scenario.AttackType.Name</span></p>
 
-<form method="post" asp-action="ExecuteScenario" asp-route-assignmentId="@Model.Id">
-    <div class="form-group">
-        <label>Ваш ответ / отчет по выполнению</label>
-        <textarea name="studentResponse" class="form-control" rows="5" required></textarea>
+    <div class="mb-4">
+        <p class="fw-semibold text-dark">Инструкции:</p>
+        <p class="border rounded p-3 bg-light text-dark" style="white-space: pre-wrap;">@Model.Scenario.Instructions</p>
     </div>
-    <button type="submit" class="btn btn-success">Отправить</button>
-    <a asp-action="Index" class="btn btn-secondary ml-2">Отмена</a>
-</form>
+
+    <form method="post" asp-action="ExecuteScenario" asp-route-assignmentId="@Model.Id" novalidate>
+        <div class="mb-3">
+            <label for="studentResponse" class="form-label fw-semibold text-dark">Ваш ответ / отчёт по выполнению</label>
+            <textarea id="studentResponse" name="studentResponse" class="form-control" rows="6" required placeholder="Введите ваш ответ или отчёт здесь..."></textarea>
+            <div class="invalid-feedback">
+                Пожалуйста, заполните это поле.
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg shadow-sm" style="border-radius: 6px;">Отправить</button>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-lg ms-3">Отмена</a>
+    </form>
+</div>
+
+<script>
+    (() => {
+        'use strict'
+        const form = document.querySelector('form')
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })()
+</script>

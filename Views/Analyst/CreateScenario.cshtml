@@ -4,28 +4,42 @@
     ViewData["Title"] = "Создать сценарий";
 }
 
-<h2>Создать сценарий</h2>
+<div class="container py-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h2 class="card-title text-primary mb-4">Создать сценарий</h2>
 
-<form asp-action="CreateScenario" method="post">
-    <div class="form-group">
-        <label>Название</label>
-        <input asp-for="Title" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Тип атаки</label>
-<select asp-for="AttackTypeId" 
-        asp-items="@(new SelectList(ViewData["AttackTypes"] as List<CyberSecLabPlatform.Models.AttackType>, "Id", "Name"))" 
-        class="form-control">
-</select>
-    </div>
-    <div class="form-group">
-        <label>Максимальный балл</label>
-        <input asp-for="MaxScore" class="form-control" type="number" />
-    </div>
-    <div class="form-check">
-        <input asp-for="IsActive" class="form-check-input" />
-        <label asp-for="IsActive" class="form-check-label">Активен</label>
-    </div>
+            <form asp-action="CreateScenario" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Название</label>
+                    <input asp-for="Title" class="form-control" />
+                </div>
 
-    <button type="submit" class="btn btn-success mt-3">Создать</button>
-</form>
+                <div class="mb-3">
+                    <label class="form-label">Тип атаки</label>
+                    <select asp-for="AttackTypeId" 
+                            asp-items="@(new SelectList(ViewData["AttackTypes"] as List<CyberSecLabPlatform.Models.AttackType>, "Id", "Name"))" 
+                            class="form-select">
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Описание</label>
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Максимальный балл</label>
+                    <input asp-for="MaxScore" type="number" class="form-control" />
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label">Активен</label>
+                </div>
+
+                <button type="submit" class="btn btn-success">Создать</button>
+            </form>
+        </div>
+    </div>
+</div>

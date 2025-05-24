@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CyberSecLabPlatform")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a90be1a205aa51672c13fc8a1d8c2f8f97cef3e3")]
 [assembly: System.Reflection.AssemblyProductAttribute("CyberSecLabPlatform")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CyberSecLabPlatform")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

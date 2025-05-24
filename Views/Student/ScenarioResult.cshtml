@@ -1,0 +1,48 @@
+@model CyberSecLabPlatform.Models.ScenarioResult
+
+@{
+    ViewData["Title"] = "Результат сценария";
+}
+
+<div class="result-container p-4 rounded shadow-sm bg-white" style="max-width: 600px; margin: 2rem auto;">
+    <h2 class="mb-4 text-primary fw-bold">Сценарий: <span class="text-dark">@Model.Assignment.Scenario.Title</span></h2>
+
+    <div class="mb-3">
+        <h5 class="fw-bold text-dark">Ваш результат</h5>
+        <p class="fs-4 text-success">@Model.Score из @Model.Assignment.Scenario.MaxScore</p>
+    </div>
+
+    <div class="mb-3">
+        <h5 class="fw-bold text-dark">Статус</h5>
+        @if (Model.IsPassed)
+        {
+            <span class="badge bg-success fs-5 px-3 py-2">Пройден</span>
+        }
+        else
+        {
+            <span class="badge bg-danger fs-5 px-3 py-2">Не пройден</span>
+        }
+    </div>
+
+    <div class="mb-4">
+        <h5 class="fw-bold text-dark">Дата завершения</h5>
+        <p class="text-muted">@Model.CompletedAt.ToLocalTime().ToString("dd MMMM yyyy, HH:mm")</p>
+    </div>
+
+    <a asp-action="Index" class="btn btn-outline-secondary btn-lg shadow-sm" style="border-radius: 8px;">
+        ← Назад к сценариям
+    </a>
+</div>
+
+<style>
+    .result-container h2, .result-container h5 {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .badge {
+        border-radius: 12px;
+    }
+    .btn-lg:hover {
+        box-shadow: 0 6px 12px rgba(108, 117, 125, 0.3);
+        transition: box-shadow 0.25s ease-in-out;
+    }
+</style>

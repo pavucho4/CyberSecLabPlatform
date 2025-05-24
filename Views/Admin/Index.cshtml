@@ -4,26 +4,56 @@
     ViewData["Title"] = "Типы атак";
 }
 
-<h2>Типы атак</h2>
+<div class="container my-5" style="max-width: 900px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-semibold">Типы атак</h2>
+        <a href="/Admin/CreateAttackType" class="btn btn-primary btn-lg shadow-sm" style="border-radius: 6px;">
+            Добавить новый тип атаки
+        </a>
+    </div>
 
-<a href="/Admin/CreateAttackType" class="btn btn-primary mb-3">Добавить новый тип атаки</a>
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Название</th>
-            <th>Описание</th>
-            <th>Сложность</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var attack in Model)
-        {
+    <table class="table table-hover table-bordered align-middle shadow-sm" style="background: #fff;">
+        <thead class="table-light">
             <tr>
-                <td>@attack.Name</td>
-                <td>@attack.Description</td>
-                <td>@attack.Difficulty</td>
+                <th style="width: 20%;">Название</th>
+                <th style="width: 55%;">Описание</th>
+                <th style="width: 25%;">Сложность</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="3" class="text-center text-muted py-4">Типы атак не найдены.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var attack in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@attack.Name</td>
+                        <td>@(string.IsNullOrWhiteSpace(attack.Description) ? "<em class='text-muted'>Описание отсутствует</em>" : attack.Description)</td>
+                        <td>
+                            @switch(attack.Difficulty?.ToLower())
+                            {
+                                case "low":
+                                    <span class="badge bg-success">Низкая</span>
+                                    break;
+                                case "medium":
+                                    <span class="badge bg-warning text-dark">Средняя</span>
+                                    break;
+                                case "high":
+                                    <span class="badge bg-danger">Высокая</span>
+                                    break;
+                                default:
+                                    <span class="text-muted">Не указано</span>
+                                    break;
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

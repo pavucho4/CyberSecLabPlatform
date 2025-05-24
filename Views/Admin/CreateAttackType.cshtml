@@ -4,29 +4,60 @@
     ViewData["Title"] = "Добавить тип атаки";
 }
 
-<h2>Добавить новый тип атаки</h2>
+<style>
+    /* Очень специфичный селектор с !important */
+    form label.label-bright {
+        color: #ffffff !important;
+        font-weight: 900 !important;
+        text-shadow: 0 0 3px rgba(0,0,0,0.7);
+    }
+</style>
 
-<form asp-action="CreateAttackType" method="post">
-    <div class="form-group">
-        <label asp-for="Name"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Description"></label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-    </div>
-    <div class="form-group">
-        <label asp-for="Difficulty"></label>
-        <select asp-for="Difficulty" class="form-control">
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
-        </select>
-    </div>
-    <button type="submit" class="btn btn-success">Сохранить</button>
-</form>
+<div class="container mx-auto my-5" style="max-width: 600px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #333; padding: 20px; border-radius: 8px;">
+    <h2 class="mb-4 text-primary fw-semibold">Добавить новый тип атаки</h2>
+
+    <form asp-action="CreateAttackType" method="post" novalidate>
+        <div class="mb-3">
+            <label for="Name" class="label-bright">Название</label>
+            <input id="Name" name="Name" asp-for="Name" class="form-control" placeholder="Введите название типа атаки" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+            <div class="invalid-feedback">Пожалуйста, укажите название типа атаки.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="Description" class="label-bright">Описание</label>
+            <textarea id="Description" name="Description" asp-for="Description" class="form-control" rows="4" placeholder="Введите описание типа атаки (необязательно)"></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label for="Difficulty" class="label-bright">Сложность</label>
+            <select id="Difficulty" name="Difficulty" asp-for="Difficulty" class="form-select" required>
+                <option value="" disabled selected>-- Выберите уровень сложности --</option>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+            </select>
+            <div class="invalid-feedback">Пожалуйста, выберите уровень сложности.</div>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg shadow-sm" style="border-radius: 6px;">Сохранить</button>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (() => {
+            'use strict';
+            const form = document.querySelector('form');
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        })();
+    </script>
 }

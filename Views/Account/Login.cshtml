@@ -1,22 +1,64 @@
 @model CyberSecLabPlatform.Models.LoginViewModel
 
-<h2>Вход</h2>
+<form asp-action="Login" method="post" class="mt-3 glass-card p-4 mx-auto" style="max-width: 400px; border-radius: 12px;">
+    <h2 class="mb-4 text-center text-white fw-bold" style="text-shadow: 0 0 8px rgba(13,110,253,0.7);">
+        Вход
+    </h2>
 
-<form asp-action="Login" method="post">
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-    <input asp-for="Email" class="form-control mb-2" placeholder="Email" />
-    <span asp-validation-for="Email" class="text-danger"></span>
+    <input asp-for="Email" type="email" placeholder="Email" class="form-control mb-2 shadow-sm" style="border-radius: 8px;" />
+    <span asp-validation-for="Email" class="text-danger small mb-3 d-block"></span>
 
-    <input asp-for="Password" type="password" class="form-control mb-3" placeholder="Пароль" />
-    <span asp-validation-for="Password" class="text-danger"></span>
+    <input asp-for="Password" type="password" placeholder="Пароль" class="form-control mb-3 shadow-sm" style="border-radius: 8px;" />
+    <span asp-validation-for="Password" class="text-danger small mb-3 d-block"></span>
 
-    <button type="submit" class="btn btn-primary">Войти</button>
+    <button type="submit" class="btn btn-success w-100 mb-3 shadow" style="border-radius: 10px; font-weight: 600;">
+        Войти
+    </button>
+
+    <input type="hidden" asp-for="ReturnUrl" />
+
+    <p class="text-center text-white" style="text-shadow: 0 0 6px rgba(0,0,0,0.5);">
+        Нет аккаунта? <a href="/Account/Register" class="text-success fw-bold text-decoration-underline">Зарегистрироваться</a>
+    </p>
 </form>
 
-<input type="hidden" asp-for="ReturnUrl" />
-
-<p>Нет аккаунта? <a href="/Account/Register">Зарегистрироваться</a></p>
+<style>
+    .glass-card {
+        background: rgba(255 255 255 / 0.1);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255 255 255 / 0.25);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        color: #e0e7e9;
+        transition: box-shadow 0.3s ease;
+    }
+    .glass-card:hover {
+        box-shadow: 0 12px 40px 0 rgba(40, 167, 69, 0.7); /* зеленый акцент */
+    }
+    input.form-control {
+        background: rgba(255 255 255 / 0.15);
+        color: #fff;
+        border: none;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    input.form-control::placeholder {
+        color: #c0d6c9;
+        font-style: italic;
+    }
+    input.form-control:focus {
+        background: rgba(40, 167, 69, 0.15);
+        box-shadow: 0 0 8px 2px #28a745;
+        color: #e0f0fb;
+        outline: none;
+        border: none;
+    }
+    a.text-success:hover {
+        color: #1e7e34 !important;
+        text-decoration: none;
+    }
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

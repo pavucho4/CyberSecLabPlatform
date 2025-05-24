@@ -1,0 +1,292 @@
+@model CyberSecLabPlatform.Models.Scenario
+
+@{
+    ViewData["Title"] = "Редактировать сценарий";
+}
+
+<style>
+    /* Сделать текст меток темнее */
+    label, .form-label {
+        color: #212529; /* тёмно-серый цвет */
+        font-weight: 600;
+    }
+
+    /* Тёмный цвет и жирность для заголовков */
+    .card-header span,
+    .text-secondary,
+    h5 {
+        color: #212529;
+        font-weight: 600;
+    }
+</style>
+
+
+<!-- Обёртка для правильного расположения футера -->
+<div class="page-wrapper d-flex flex-column min-vh-100">
+
+    <!-- Основной контент страницы -->
+    <main class="flex-grow-1">
+        <div class="container py-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h2 class="card-title text-primary mb-4">Редактировать сценарий</h2>
+
+                    <form asp-action="EditScenario" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Название</label>
+                            <input asp-for="Title" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Описание</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Тип атаки</label>
+                            <select asp-for="AttackTypeId"
+                                    asp-items="@(new SelectList((IEnumerable<dynamic>)ViewBag.AttackTypes, "Id", "Name"))"
+                                    class="form-select">
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Максимальный балл</label>
+                            <input asp-for="MaxScore" type="number" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Инструкции</label>
+                            <textarea asp-for="Instructions" class="form-control" rows="5"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Сложность</label>
+                            <input asp-for="Complexity" class="form-control" readonly />
+                            <input type="hidden" asp-for="Complexity" />
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input asp-for="IsActive" class="form-check-input" />
+                            <label asp-for="IsActive" class="form-check-label">Активен</label>
+                        </div>
+
+                        <h4 class="text-secondary mb-3">Шаги сценария</h4>
+
+                        <div id="steps-container">
+                            @if (Model.Steps != null && Model.Steps.Any())
+                            {
+                                @for (int i = 0; i < Model.Steps.Count(); i++)
+                                {
+                                    var step = Model.Steps.ElementAt(i);
+                                    <div class="card mb-3 step-card" data-step-index="@i">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <span>Шаг @(i + 1)</span>
+                                            <button type="button" class="btn btn-sm btn-danger btn-remove-step">Удалить</button>
+                                        </div>
+                                        <div class="card-body">
+                                            <input type="hidden" name="Steps[@i].Id" value="@step.Id" />
+                                            <input type="hidden" name="Steps[@i].ScenarioId" value="@step.ScenarioId" />
+
+                                            <div class="mb-3">
+                                                <label>Текст шага</label>
+                                                <textarea name="Steps[@i].StepText" class="form-control" rows="2">@step.StepText</textarea>
+                                            </div>
+
+                                            <div class="form-check mb-3">
+                                                <input type="checkbox" name="Steps[@i].IsFinal" value="true" @(step.IsFinal ? "checked" : "") class="form-check-input" />
+                                                <input type="hidden" name="Steps[@i].IsFinal" value="false" />
+                                                <label class="form-check-label">Финальный шаг</label>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label>Баллы за успех</label>
+                                                <input type="number" name="Steps[@i].ScoreIfSuccess" value="@step.ScoreIfSuccess" class="form-control" />
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label>Баллы за провал</label>
+                                                <input type="number" name="Steps[@i].ScoreIfFail" value="@step.ScoreIfFail" class="form-control" />
+                                            </div>
+
+                                            <h5 class="mt-3">Варианты ответов</h5>
+                                            <div class="option-container" id="option-container-@i">
+                                                @if (step.Options != null && step.Options.Any())
+                                                {
+                                                    @for (int j = 0; j < step.Options.Count(); j++)
+                                                    {
+                                                        var option = step.Options.ElementAt(j);
+                                                        <div class="card mb-2 option-card" data-option-index="@j">
+                                                            <div class="card-body">
+                                                                <input type="hidden" name="Steps[@i].Options[@j].Id" value="@option.Id" />
+                                                                <input type="hidden" name="Steps[@i].Options[@j].ScenarioStepId" value="@step.Id" />
+
+                                                                <div class="mb-3">
+                                                                    <label>Текст варианта</label>
+                                                                    <input type="text" name="Steps[@i].Options[@j].OptionText" value="@option.OptionText" class="form-control" />
+                                                                </div>
+
+                                                                <div class="form-check">
+                                                                    <input type="checkbox" name="Steps[@i].Options[@j].IsCorrect"
+                                                                        class="form-check-input"
+                                                                        value="true" @(option.IsCorrect ? "checked" : "") />
+                                                                    <input type="hidden" name="Steps[@i].Options[@j].IsCorrect" value="false" />
+                                                                    <label class="form-check-label">Правильный ответ</label>
+                                                                </div>
+
+                                                                <div class="mb-3 mt-2">
+                                                                    <label>Следующий шаг (ID)</label>
+                                                                    <input type="number" name="Steps[@i].Options[@j].NextStepId"
+                                                                           value="@option.NextStepId" class="form-control" />
+                                                                </div>
+
+                                                                <button type="button" class="btn btn-sm btn-danger btn-remove-option">Удалить вариант</button>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+
+                                            <button type="button" class="btn btn-sm btn-outline-primary mt-2 btn-add-option" data-step-index="@i">Добавить вариант</button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <button type="button" class="btn btn-success mt-3" id="btn-add-step">Добавить шаг</button>
+
+                        <div class="mt-3 d-flex gap-2 flex-wrap">
+                            <button type="submit" class="btn btn-primary flex-grow-1 flex-md-grow-0">Сохранить изменения</button>
+                            <a asp-action="ManageScenarios" class="btn btn-secondary flex-grow-1 flex-md-grow-0">Назад к сценариям</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+@section Scripts {
+    <script>
+        let stepIndex = @Model.Steps?.Count() ?? 0;
+
+        function updateIndexes() {
+            const steps = document.querySelectorAll('#steps-container .step-card');
+            steps.forEach((stepCard, i) => {
+                stepCard.dataset.stepIndex = i;
+                stepCard.querySelector('.card-header span').textContent = `Шаг ${i + 1}`;
+
+                stepCard.querySelectorAll('input, textarea, select').forEach(el => {
+                    el.name = el.name.replace(/Steps\[\d+\]/, `Steps[${i}]`);
+                });
+
+                const options = stepCard.querySelectorAll('.option-container .option-card');
+                options.forEach((optionCard, j) => {
+                    optionCard.dataset.optionIndex = j;
+                    optionCard.querySelectorAll('input, textarea, select').forEach(el => {
+                        el.name = el.name.replace(/Steps\[\d+\].Options\[\d+\]/, `Steps[${i}].Options[${j}]`);
+                    });
+                });
+
+                const optionContainer = stepCard.querySelector('.option-container');
+                optionContainer.id = `option-container-${i}`;
+                const addOptionBtn = stepCard.querySelector('.btn-add-option');
+                addOptionBtn.dataset.stepIndex = i;
+            });
+        }
+
+        document.getElementById('btn-add-step').addEventListener('click', function () {
+            const container = document.getElementById('steps-container');
+
+            const card = document.createElement('div');
+            card.className = 'card mb-3 step-card';
+            card.dataset.stepIndex = stepIndex;
+            card.innerHTML = `
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Шаг ${stepIndex + 1}</span>
+                    <button type="button" class="btn btn-sm btn-danger btn-remove-step">Удалить</button>
+                </div>
+                <div class="card-body">
+                    <input type="hidden" name="Steps[${stepIndex}].Id" value="0" />
+                    <input type="hidden" name="Steps[${stepIndex}].ScenarioId" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label>Текст шага</label>
+                        <textarea name="Steps[${stepIndex}].StepText" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input type="checkbox" name="Steps[${stepIndex}].IsFinal" value="true" class="form-check-input" />
+                        <input type="hidden" name="Steps[${stepIndex}].IsFinal" value="false" />
+                        <label class="form-check-label">Финальный шаг</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Баллы за успех</label>
+                        <input type="number" name="Steps[${stepIndex}].ScoreIfSuccess" class="form-control" value="0" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Баллы за провал</label>
+                        <input type="number" name="Steps[${stepIndex}].ScoreIfFail" class="form-control" value="0" />
+                    </div>
+
+                    <h5 class="mt-3">Варианты ответов</h5>
+                    <div class="option-container" id="option-container-${stepIndex}"></div>
+                    <button type="button" class="btn btn-sm btn-outline-primary mt-2 btn-add-option" data-step-index="${stepIndex}">Добавить вариант</button>
+                </div>
+            `;
+
+            container.appendChild(card);
+            stepIndex++;
+        });
+
+        document.getElementById('steps-container').addEventListener('click', function (e) {
+            if (e.target.classList.contains('btn-remove-step')) {
+                e.target.closest('.step-card').remove();
+                updateIndexes();
+            }
+            if (e.target.classList.contains('btn-remove-option')) {
+                e.target.closest('.option-card').remove();
+                updateIndexes();
+            }
+            if (e.target.classList.contains('btn-add-option')) {
+                const stepIdx = e.target.dataset.stepIndex;
+                const optionContainer = document.getElementById(`option-container-${stepIdx}`);
+                const optionCount = optionContainer.children.length;
+
+                const div = document.createElement('div');
+                div.className = 'card mb-2 option-card';
+                div.dataset.optionIndex = optionCount;
+                div.innerHTML = `
+                    <div class="card-body">
+                        <input type="hidden" name="Steps[${stepIdx}].Options[${optionCount}].Id" value="0" />
+                        <div class="mb-3">
+                            <label>Текст варианта</label>
+                            <input type="text" name="Steps[${stepIdx}].Options[${optionCount}].OptionText" class="form-control" />
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" name="Steps[${stepIdx}].Options[${optionCount}].IsCorrect" value="true" class="form-check-input" />
+                            <input type="hidden" name="Steps[${stepIdx}].Options[${optionCount}].IsCorrect" value="false" />
+                            <label class="form-check-label">Правильный ответ</label>
+                        </div>
+
+                        <div class="mb-3 mt-2">
+                            <label>Следующий шаг (ID)</label>
+                            <input type="number" name="Steps[${stepIdx}].Options[${optionCount}].NextStepId" class="form-control" />
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-danger btn-remove-option">Удалить вариант</button>
+                    </div>
+                `;
+
+                optionContainer.appendChild(div);
+            }
+        });
+    </script>
+}

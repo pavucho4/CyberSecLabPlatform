@@ -38,6 +38,9 @@ namespace CyberSecLabPlatform.Data
                 .WithMany()
                 .HasForeignKey(o => o.NextStepId)
                 .OnDelete(DeleteBehavior.Restrict);
+                
+            // Добавление примеров сценариев для тестирования
+            builder.SeedSampleScenarios();
         }
     }
 }

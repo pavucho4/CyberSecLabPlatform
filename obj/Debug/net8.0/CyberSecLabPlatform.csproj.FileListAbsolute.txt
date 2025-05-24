@@ -168,3 +168,4 @@
 /home/pavucho4/RPVAD/CyberSecLabPlatform/obj/Debug/net8.0/CyberSecLabPlatform.pdb
 /home/pavucho4/RPVAD/CyberSecLabPlatform/obj/Debug/net8.0/CyberSecLabPlatform.genruntimeconfig.cache
 /home/pavucho4/RPVAD/CyberSecLabPlatform/obj/Debug/net8.0/ref/CyberSecLabPlatform.dll
+/home/pavucho4/RPVAD/CyberSecLabPlatform/obj/Debug/net8.0/CyberSecLabPlatform.sourcelink.json

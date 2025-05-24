@@ -12,5 +12,7 @@ namespace CyberSecLabPlatform.Models
 
         // Добавляем навигационное свойство для удобства Include()
         public Scenario Scenario { get; set; }
+        public int CurrentScore { get; set; }  // Добавить сюда накопленные баллы
+
     }
 }

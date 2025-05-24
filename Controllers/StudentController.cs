@@ -37,8 +37,26 @@ namespace CyberSecLabPlatform.Controllers
             return View(assignments);
         }
 
-        // Запуск симуляции для выбранного задания
+        // GET: Показ формы запуска сценария
+        [HttpGet]
         public async Task<IActionResult> ExecuteScenario(int assignmentId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var assignment = await _context.StudentAttackAssignments
+                .Include(a => a.Scenario)
+                    .ThenInclude(s => s.AttackType)
+                .FirstOrDefaultAsync(a => a.Id == assignmentId && a.StudentId == user.Id);
+
+            if (assignment == null)
+                return NotFound();
+
+            return View(assignment);
+        }
+
+        // POST: Запуск симуляции для выбранного задания
+        [HttpPost]
+        public async Task<IActionResult> ExecuteScenario(int assignmentId, string studentResponse)
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -50,7 +68,6 @@ namespace CyberSecLabPlatform.Controllers
             if (assignment == null)
                 return NotFound();
 
-            // Берём первый шаг сценария по Order (предполагается, что есть поле Order для сортировки шагов)
             var firstStep = assignment.Scenario.Steps.OrderBy(step => step.Id).FirstOrDefault();
             if (firstStep == null)
                 return BadRequest("В сценарии нет шагов.");
@@ -71,10 +88,12 @@ namespace CyberSecLabPlatform.Controllers
             return RedirectToAction(nameof(SimulateStep), new { simulationId = simulation.Id });
         }
 
+        // GET: Показ текущего шага симуляции
         [HttpGet]
         public async Task<IActionResult> SimulateStep(int simulationId)
         {
             var user = await _userManager.GetUserAsync(User);
+
             var simulation = await _context.AttackSimulationStates
                 .Include(s => s.Scenario)
                     .ThenInclude(s => s.Steps)
@@ -83,6 +102,17 @@ namespace CyberSecLabPlatform.Controllers
 
             if (simulation == null)
                 return NotFound();
+
+            if (simulation.IsCompleted)
+            {
+                var assignment = await _context.StudentAttackAssignments
+                    .FirstOrDefaultAsync(a => a.StudentId == user.Id && a.ScenarioId == simulation.ScenarioId && a.Completed);
+
+                if (assignment != null)
+                    return RedirectToAction(nameof(ScenarioResult), new { assignmentId = assignment.Id });
+
+                return View("SimulationCompleted");
+            }
 
             var history = JsonConvert.DeserializeObject<List<string>>(simulation.HistoryJson) ?? new List<string>();
 
@@ -112,6 +142,7 @@ namespace CyberSecLabPlatform.Controllers
             return View(model);
         }
 
+        // POST: Обработка выбора действия на шаге
         [HttpPost]
         public async Task<IActionResult> SimulateStep(int simulationId, int actionId)
         {
@@ -139,57 +170,116 @@ namespace CyberSecLabPlatform.Controllers
             if (selectedOption == null)
                 return BadRequest("Выбранное действие недействительно.");
 
-            // Для модели ScenarioStepOption в твоём описании нет поля Result, 
-            // добавим для логики здесь, можно его создать или временно заменить на OptionText
             var resultMessage = selectedOption.OptionText;
 
-            string nextStepId = selectedOption.NextStepId != 0 ? selectedOption.NextStepId.ToString() : null;
+            string nextStepId = selectedOption.NextStepId?.ToString();
+
+            history.Add($"[{DateTime.Now:HH:mm:ss}] Действие: {selectedOption.OptionText} - Результат: {resultMessage}");
 
             if (string.IsNullOrEmpty(nextStepId))
-            {
-                // Если nextStepId == 0, значит это конец сценария
-                simulation.IsCompleted = true;
-            }
+{
+    // Если не указан следующий шаг, но в сценарии есть еще шаги после текущего — пробуем взять их
+    var orderedSteps = simulation.Scenario.Steps.OrderBy(s => s.Id).ToList();
+    var currentIndex = orderedSteps.FindIndex(s => s.Id == currentStep.Id);
 
-            // Добавляем запись в историю
-            history.Add($"[{DateTime.Now:HH:mm:ss}] Действие: {selectedOption.OptionText} - Результат: {resultMessage}");
+    if (currentIndex >= 0 && currentIndex + 1 < orderedSteps.Count)
+    {
+        var nextStep = orderedSteps[currentIndex + 1];
+        nextStepId = nextStep.Id.ToString();
+    }
+    else
+    {
+        // Действительно конец сценария
+        simulation.IsCompleted = true;
+        nextStepId = null;
+    }
+}
+
 
             simulation.HistoryJson = JsonConvert.SerializeObject(history);
             simulation.ResultJson = resultMessage;
             simulation.CurrentStep = nextStepId ?? simulation.CurrentStep;
 
-            // Отметим выполнение задания, если симуляция завершена
-            if (simulation.IsCompleted)
-            {
-                var assignment = await _context.StudentAttackAssignments
-                    .FirstOrDefaultAsync(a => a.StudentId == user.Id && a.ScenarioId == simulation.ScenarioId && !a.Completed);
+            var assignment = await _context.StudentAttackAssignments
+                .FirstOrDefaultAsync(a => a.StudentId == user.Id && a.ScenarioId == simulation.ScenarioId && !a.Completed);
 
-                if (assignment != null)
+            if (assignment != null)
+            {
+                if (selectedOption.IsCorrect)
+                    assignment.Score += currentStep.ScoreIfSuccess;
+                else
+                    assignment.Score += currentStep.ScoreIfFail;
+
+                if (simulation.IsCompleted)
                 {
                     assignment.Completed = true;
+                    // assignment.CompletedAt = DateTime.UtcNow; // Если нужно, можно раскомментировать
                 }
             }
 
             await _context.SaveChangesAsync();
 
+            if (simulation.IsCompleted)
+            {
+                // Теперь ищем уже завершённое задание для корректного редиректа
+                assignment = await _context.StudentAttackAssignments
+                    .FirstOrDefaultAsync(a => a.StudentId == user.Id && a.ScenarioId == simulation.ScenarioId && a.Completed);
+
+                return RedirectToAction(nameof(ScenarioResult), new { assignmentId = assignment?.Id });
+            }
+
             return RedirectToAction(nameof(SimulateStep), new { simulationId = simulation.Id });
         }
-    }
 
-    // Модель для передачи действия в вьюху
-    public class AvailableAction
-    {
-        public int ActionId { get; set; }
-        public string ActionName { get; set; }
-    }
+        // GET: Показ результата выполненного сценария
+        [HttpGet]
+        public async Task<IActionResult> ScenarioResult(int assignmentId)
+        {
+            var user = await _userManager.GetUserAsync(User);
 
-    // Модель для передачи данных в вьюху симуляции
-    public class SimulationViewModel
-    {
-        public AttackSimulationState Simulation { get; set; }
-        public List<string> History { get; set; }
-        public string Result { get; set; }
-        public ScenarioStep CurrentStep { get; set; }
-        public List<AvailableAction> AvailableActions { get; set; }
+            var assignment = await _context.StudentAttackAssignments
+                .Include(a => a.Scenario)
+                    .ThenInclude(s => s.AttackType)
+                .FirstOrDefaultAsync(a => a.Id == assignmentId && a.StudentId == user.Id);
+
+            if (assignment == null || !assignment.Completed)
+                return NotFound();
+
+            var model = new ScenarioResult
+            {
+                Assignment = assignment,
+                Score = assignment.Score,
+                IsPassed = true, // Здесь по умолчанию true
+                CompletedAt = DateTime.UtcNow
+            };
+
+            return View(model);
+        }
+
+        // POST: Удаление назначения
+        [HttpPost]
+        public async Task<IActionResult> DeleteAssignment(int assignmentId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var assignment = await _context.StudentAttackAssignments
+                .FirstOrDefaultAsync(a => a.Id == assignmentId && a.StudentId == user.Id);
+
+            if (assignment == null)
+                return NotFound();
+
+            var simulations = await _context.AttackSimulationStates
+                .Where(s => s.UserId == user.Id && s.ScenarioId == assignment.ScenarioId)
+                .ToListAsync();
+
+            if (simulations.Any())
+                _context.AttackSimulationStates.RemoveRange(simulations);
+
+            _context.StudentAttackAssignments.Remove(assignment);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
